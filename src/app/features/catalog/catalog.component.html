@@ -1,0 +1,69 @@
+<section class="catalog-hero">
+  <div class="catalog-copy">
+    <span class="badge">Tienda online</span>
+    <h1>Ropa urbana</h1>
+    <p>Explora polos, poleras, casacas, pantalones, calzado y accesorios. Filtra por categoría, disponibilidad o nombre antes de agregar al carrito.</p>
+  </div>
+  <div class="catalog-stats">
+    <strong>{{ filteredProducts.length }}</strong>
+    <span>resultado(s)</span>
+  </div>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+
+<section class="filter-panel catalog-toolbar">
+  <div class="filter-grid">
+    <label class="search-input">Buscar productos
+      <input [(ngModel)]="search" placeholder="Buscar polo, pantalón, zapatilla, accesorio..." (keyup.enter)="searchProducts()" />
+    </label>
+    <label>Categoría
+      <select [(ngModel)]="selectedCategoryId"><option value="ALL">Todas</option>@for (category of categories; track category.idCategory) { <option [ngValue]="category.idCategory">{{ category.name }}</option> }</select>
+    </label>
+    <label class="checkbox"><input type="checkbox" [(ngModel)]="onlyAvailable"> Solo disponibles</label>
+    <div class="actions"><button class="ghost" (click)="clearFilters()">Limpiar filtros</button><button class="ghost" (click)="load()">Recargar</button></div>
+  </div>
+</section>
+
+@if (queryCategory) {
+  <div class="active-filter">
+    <span>Filtro desde menú: <strong>{{ queryCategory }}</strong></span>
+    <button class="ghost" (click)="clearFilters()">Quitar filtro</button>
+  </div>
+}
+
+@if (categories.length) {
+  <div class="category-strip">
+    <button class="ghost" [class.primary]="selectedCategoryId === 'ALL'" (click)="selectedCategoryId = 'ALL'">Todo</button>
+    @for (category of categories; track category.idCategory) {
+      <button class="ghost" [class.primary]="selectedCategoryId === category.idCategory" (click)="selectedCategoryId = category.idCategory">{{ category.name }}</button>
+    }
+  </div>
+}
+
+@if (filteredProducts.length === 0) {
+  <div class="empty-state">No hay productos disponibles para mostrar con esos filtros.</div>
+} @else {
+  <div class="table-title"><h2>Productos disponibles</h2><span class="table-meta">{{ filteredProducts.length }} artículo(s)</span></div>
+  <div class="product-grid fashion-grid">
+    @for (product of filteredProducts; track product.idProduct) {
+      <article class="product-card fashion-card">
+        <div class="image-wrap">
+          <img class="product-image" [src]="product.imageUrl || 'https://placehold.co/650x820/f3f4f6/111111?text=UrbanCore'" [alt]="product.name" />
+          <button class="wish" type="button" aria-label="Favorito">♡</button>
+          <span class="floating-stock" [class.out]="(product.availableStock ?? 0) <= 0">Stock: {{ product.availableStock ?? 'N/D' }}</span>
+        </div>
+        <div class="product-info">
+          <span class="brand-label">UrbanCore</span>
+          <h3>{{ product.name }}</h3>
+          <p class="muted product-description">{{ product.description || 'Producto disponible en UrbanCore Perú.' }}</p>
+        </div>
+        <div class="product-footer">
+          <strong class="price">S/ {{ product.price | number:'1.2-2' }}</strong>
+          <span class="badge">{{ product.categoryName }}</span>
+        </div>
+        <button class="primary" (click)="cart.add(product)" [disabled]="(product.availableStock ?? 0) <= 0">Agregar al carrito</button>
+      </article>
+    }
+  </div>
+}

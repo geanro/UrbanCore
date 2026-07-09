@@ -1,0 +1,296 @@
+<section class="module-hero">
+  <span class="badge">Comercial</span>
+
+  <h1>{{ auth.hasRole('CUSTOMER') ? 'Mis compras' : 'Ventas' }}</h1>
+
+  <p class="muted">
+    {{
+    auth.hasRole('CUSTOMER')
+    ? 'Consulta las compras realizadas desde tu cuenta.'
+    : 'Consulta ventas globales, de sucursal o propias según tus permisos. Filtra por estado, fecha, sucursal o modelo.'
+    }}
+  </p>
+</section>
+
+@if (error) {
+<div class="alert error">{{ error }}</div>
+}
+
+@if (message) {
+<div class="alert success">{{ message }}</div>
+}
+
+<div class="stats-grid">
+  <div class="stat-mini">
+    <span>Vista</span>
+    <strong>{{ auth.hasRole('CUSTOMER') ? 'Mis compras' : currentView }}</strong>
+  </div>
+
+  <div class="stat-mini">
+    <span>Completadas</span>
+    <strong>{{ completedCount }}</strong>
+  </div>
+
+  <div class="stat-mini">
+    <span>Canceladas</span>
+    <strong>{{ cancelledCount }}</strong>
+  </div>
+
+  <div class="stat-mini">
+    <span>Total filtrado</span>
+    <strong>S/ {{ totalAmount | number:'1.2-2' }}</strong>
+  </div>
+</div>
+
+<div class="toolbar">
+  @if (auth.hasPermission('READ_ALL_SALES')) {
+  <button class="ghost" (click)="loadAll()">Todas</button>
+  }
+
+  @if (auth.hasPermission('READ_BRANCH_SALES')) {
+  <button class="ghost" (click)="loadMyBranch()">Mi sucursal</button>
+  }
+
+  @if (auth.hasPermission('READ_MY_SALES')) {
+  <button class="ghost" (click)="loadMine()">
+    {{ auth.hasRole('CUSTOMER') ? 'Mis compras' : 'Mis ventas' }}
+  </button>
+  }
+</div>
+
+@if (canCreateSale) {
+<section class="card sale-create-card">
+  <div class="section-heading">
+    <div>
+      <h2>Nueva venta</h2>
+      <p class="muted">
+        Busca cada modelo por separado y registra la venta en la sucursal permitida.
+      </p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+
+    @if (isBranchLocked) {
+    <label>Sucursal asignada
+      <input [value]="assignedBranchName || 'Cargando sucursal...'" readonly>
+    </label>
+
+    <small class="muted">
+      Tu rol solo permite registrar ventas en tu propia sucursal.
+    </small>
+    } @else {
+    <label>Sucursal
+      <select formControlName="branchId">
+        <option [ngValue]="null">Seleccione</option>
+
+        @for (branch of branches; track branch.idBranch) {
+        <option [ngValue]="branch.idBranch">
+          {{ branch.name }}
+        </option>
+        }
+      </select>
+    </label>
+    }
+
+    <div formArrayName="details">
+      @for (detail of details.controls; track $index) {
+      <div [formGroupName]="$index" class="sale-detail-box">
+
+        <label class="search-input">
+          Buscar modelo
+          <input
+                  type="text"
+                  formControlName="productSearch"
+                  placeholder="Buscar polo, casaca, pantalón, zapatilla..."
+          >
+        </label>
+
+        <div class="sale-search-info">
+              <span class="badge">
+                {{ filteredProductsFor($index).length }} modelo(s) encontrado(s)
+              </span>
+        </div>
+
+        <div class="form-grid three detail-row">
+          <label>Modelo
+            <select formControlName="productId">
+              <option [ngValue]="null">Seleccione</option>
+
+              @for (product of filteredProductsFor($index); track product.idProduct) {
+              <option [ngValue]="product.idProduct">
+                {{ product.name }} - {{ product.categoryName }} - S/ {{ product.price | number:'1.2-2' }}
+              </option>
+              }
+            </select>
+          </label>
+
+          <label>Cantidad
+            <input type="number" min="1" formControlName="quantity">
+          </label>
+
+          <div class="actions">
+            <button
+                    type="button"
+                    class="danger"
+                    (click)="removeDetail($index)"
+            >
+              Quitar
+            </button>
+          </div>
+        </div>
+
+      </div>
+      }
+    </div>
+
+    <div class="actions">
+      <button
+              type="button"
+              class="ghost"
+              (click)="addDetail()"
+      >
+        Agregar modelo
+      </button>
+
+      <button
+              class="primary"
+              [disabled]="form.invalid"
+      >
+        Crear venta
+      </button>
+    </div>
+
+  </form>
+</section>
+}
+
+<section class="filter-panel">
+  <div class="filter-grid">
+
+    <label class="search-input">Buscar venta
+      <input
+              [(ngModel)]="searchTerm"
+              placeholder="ID, usuario, modelo, sucursal o total"
+      >
+    </label>
+
+    <label>Estado
+      <select [(ngModel)]="statusFilter">
+        <option value="ALL">Todos</option>
+
+        @for (status of statuses; track status) {
+        <option [ngValue]="status">{{ status }}</option>
+        }
+      </select>
+    </label>
+
+    <label>Sucursal
+      <select [(ngModel)]="branchFilter">
+        <option value="ALL">Todas</option>
+
+        @for (branch of branches; track branch.idBranch) {
+        <option [ngValue]="branch.idBranch">
+          {{ branch.name }}
+        </option>
+        }
+      </select>
+    </label>
+
+    <label>Desde
+      <input type="date" [(ngModel)]="startDate">
+    </label>
+
+    <label>Hasta
+      <input type="date" [(ngModel)]="endDate">
+    </label>
+
+    <div class="actions">
+      <button class="ghost" (click)="clearFilters()">
+        Limpiar filtros
+      </button>
+
+      <button class="ghost" (click)="refreshSales()">
+        Recargar
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<div class="table-title">
+  <h2>Listado de ventas</h2>
+  <span class="table-meta">{{ filteredSales.length }} resultado(s)</span>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Fecha</th>
+      <th>Usuario</th>
+      <th>Sucursal</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Detalles</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @for (sale of filteredSales; track sale.idSale) {
+    <tr>
+      <td>{{ sale.idSale }}</td>
+
+      <td>{{ sale.saleDate | date:'short' }}</td>
+
+      <td>{{ sale.userName }}</td>
+
+      <td>{{ sale.branchName }}</td>
+
+      <td>
+        <strong>S/ {{ sale.total | number:'1.2-2' }}</strong>
+      </td>
+
+      <td>
+            <span
+                    class="badge"
+                    [class.success]="sale.status === 'COMPLETED'"
+                    [class.danger]="sale.status === 'CANCELLED'"
+            >
+              {{ sale.status }}
+            </span>
+      </td>
+
+      <td>
+        <ul>
+          @for (detail of sale.details; track detail.productId) {
+          <li>
+            {{ detail.productName }} x {{ detail.quantity }}
+            = S/ {{ detail.subtotal | number:'1.2-2' }}
+          </li>
+          }
+        </ul>
+      </td>
+
+      <td>
+        @if (auth.hasPermission('CANCEL_ONE_SALE') && sale.status !== 'CANCELLED') {
+        <button class="danger" (click)="cancel(sale.idSale)">
+          Cancelar
+        </button>
+        }
+      </td>
+    </tr>
+    } @empty {
+    <tr>
+      <td colspan="8">
+        <div class="empty-state">
+          No se encontraron ventas.
+        </div>
+      </td>
+    </tr>
+    }
+    </tbody>
+  </table>
+</div>

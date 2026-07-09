@@ -1,0 +1,83 @@
+<section class="module-hero">
+  <span class="badge">Operaciones</span>
+  <h1>Inventario</h1>
+  <p class="muted">Controla stock por sucursal y encuentra rápidamente el registro que necesitas actualizar.</p>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="stats-grid">
+  <div class="stat-mini"><span>Vista actual</span><strong>{{ currentView }}</strong></div>
+  <div class="stat-mini"><span>Registros</span><strong>{{ inventory.length }}</strong></div>
+  <div class="stat-mini"><span>Stock total</span><strong>{{ totalStock }}</strong></div>
+  <div class="stat-mini"><span>Stock bajo</span><strong>{{ lowStockCount }}</strong></div>
+</div>
+
+<div class="toolbar">
+  @if (canReadAllInventory) {
+    <button class="ghost" (click)="loadAll()">Todo el inventario</button>
+  }
+  @if (canReadBranchInventory) {
+    <button class="ghost" (click)="loadMyBranch()">Mi sucursal</button>
+  }
+  @if (canViewLowStock) {
+    <button class="ghost" (click)="loadLowStock()">Stock bajo &lt; 10</button>
+  }
+</div>
+
+@if (auth.hasAnyPermission(['SAVE_INVENTORY','UPDATE_INVENTORY'])) {
+  <section class="card">
+    <h2>Registrar inventario</h2>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid four">
+      <label>Sucursal
+        <select formControlName="branchId"><option [ngValue]="null">Seleccione</option>@for (branch of branches; track branch.idBranch) { <option [ngValue]="branch.idBranch">{{ branch.name }}</option> }</select>
+      </label>
+      <label>Modelo
+        <select formControlName="productId"><option [ngValue]="null">Seleccione</option>@for (product of products; track product.idProduct) { <option [ngValue]="product.idProduct">{{ product.name }}</option> }</select>
+      </label>
+      <label>Stock <input type="number" formControlName="stock"></label>
+      <div class="actions"><button class="primary" [disabled]="form.invalid">Crear inventario</button></div>
+    </form>
+  </section>
+}
+
+<section class="filter-panel">
+  <div class="filter-grid">
+    <label class="search-input">Buscar inventario
+      <input [(ngModel)]="searchTerm" placeholder="Modelo, sucursal, stock o ID">
+    </label>
+    <label>Sucursal
+      <select [(ngModel)]="branchFilter"><option value="ALL">Todas</option>@for (branch of branches; track branch.idBranch) { <option [ngValue]="branch.idBranch">{{ branch.name }}</option> }</select>
+    </label>
+    <label>Modelo
+      <select [(ngModel)]="productFilter"><option value="ALL">Todos</option>@for (product of products; track product.idProduct) { <option [ngValue]="product.idProduct">{{ product.name }}</option> }</select>
+    </label>
+    <label>Stock
+      <select [(ngModel)]="stockFilter"><option value="ALL">Todo</option><option value="AVAILABLE">Disponible</option><option value="LOW">Bajo &lt; 10</option><option value="OUT">Sin stock</option></select>
+    </label>
+    <div class="actions"><button class="ghost" (click)="clearFilters()">Limpiar filtros</button><button class="ghost" (click)="refresh()">Recargar</button></div>
+  </div>
+</section>
+
+<div class="table-title"><h2>Registros de inventario</h2><span class="table-meta">{{ filteredInventory.length }} resultado(s)</span></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Sucursal</th><th>Modelo</th><th>Stock</th><th>Actualizar</th></tr></thead>
+    <tbody>
+      @for (item of filteredInventory; track item.idInventory) {
+        <tr>
+          <td>{{ item.idInventory }}</td>
+          <td>{{ item.branchName }}</td>
+          <td><strong>{{ item.productName }}</strong></td>
+          <td><span class="badge" [class.danger]="item.stock < 10" [class.success]="item.stock >= 10">{{ item.stock }}</span></td>
+          <td>
+            @if (auth.hasPermission('UPDATE_INVENTORY')) {
+              <div class="stock-actions"><input type="number" #stock [value]="item.stock"><button class="ghost" (click)="updateStock(item.idInventory, +stock.value)">Guardar</button></div>
+            } @else { <span class="muted">Sin permiso</span> }
+          </td>
+        </tr>
+      } @empty { <tr><td colspan="5"><div class="empty-state">No se encontraron registros de inventario.</div></td></tr> }
+    </tbody>
+  </table>
+</div>

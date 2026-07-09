@@ -1,0 +1,74 @@
+<section class="module-hero">
+  <span class="badge">Seguridad</span>
+  <h1>Usuarios</h1>
+  <p class="muted">Administra cuentas internas, roles, estado y sucursal asignada.</p>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="stats-grid">
+  <div class="stat-mini"><span>Total</span><strong>{{ users.length }}</strong></div>
+  <div class="stat-mini"><span>Activos</span><strong>{{ activeCount }}</strong></div>
+  <div class="stat-mini"><span>Internos</span><strong>{{ internalCount }}</strong></div>
+  <div class="stat-mini"><span>Mostrando</span><strong>{{ filteredUsers.length }}</strong></div>
+</div>
+
+<section class="card">
+  <h2>{{ editingId ? 'Editar usuario' : 'Crear usuario interno' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-grid four">
+    <label>Nombre <input formControlName="name" placeholder="Supervisor Lima"></label>
+    <label>Username <input formControlName="username" [readonly]="!!editingId" placeholder="supervisor1"></label>
+    <label>Contraseña <input type="password" formControlName="password" [readonly]="!!editingId" placeholder="123456"></label>
+
+    <label>Rol
+      <select formControlName="role">@for (role of roles; track role) { <option [ngValue]="role">{{ role }}</option> }</select>
+    </label>
+
+    <label>Sucursal
+      <select formControlName="branchId"><option [ngValue]="null">Sin sucursal</option>@for (branch of branches; track branch.idBranch) { <option [ngValue]="branch.idBranch">{{ branch.name }}</option> }</select>
+    </label>
+
+    <label class="checkbox"><input type="checkbox" formControlName="active"> Activo</label>
+    <div class="actions"><button class="primary" [disabled]="form.invalid">{{ editingId ? 'Actualizar' : 'Guardar' }}</button><button type="button" class="ghost" (click)="reset()">Limpiar</button></div>
+  </form>
+</section>
+
+<section class="filter-panel">
+  <div class="filter-grid">
+    <label class="search-input">Buscar usuario
+      <input [(ngModel)]="searchTerm" placeholder="Nombre, username, rol, sucursal o ID">
+    </label>
+    <label>Rol
+      <select [(ngModel)]="roleFilter"><option value="ALL">Todos</option>@for (role of roles; track role) { <option [ngValue]="role">{{ role }}</option> }</select>
+    </label>
+    <label>Sucursal
+      <select [(ngModel)]="branchFilter"><option value="ALL">Todas</option>@for (branch of branches; track branch.idBranch) { <option [ngValue]="branch.idBranch">{{ branch.name }}</option> }</select>
+    </label>
+    <label>Estado
+      <select [(ngModel)]="statusFilter"><option value="ALL">Todos</option><option value="ACTIVE">Activos</option><option value="INACTIVE">Inactivos</option></select>
+    </label>
+    <div class="actions"><button class="ghost" (click)="clearFilters()">Limpiar filtros</button><button class="ghost" (click)="load()">Recargar</button></div>
+  </div>
+</section>
+
+<div class="table-title"><h2>Listado de usuarios</h2><span class="table-meta">{{ filteredUsers.length }} resultado(s)</span></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Username</th><th>Rol</th><th>Sucursal</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      @for (user of filteredUsers; track user.idUser) {
+        <tr>
+          <td>{{ user.idUser }}</td>
+          <td><strong>{{ user.name }}</strong></td>
+          <td>{{ user.username }}</td>
+          <td><span class="badge">{{ user.role }}</span></td>
+          <td>{{ user.branchName || '-' }}</td>
+          <td><span class="badge" [class.success]="user.active" [class.danger]="!user.active">{{ user.active ? 'Activo' : 'Inactivo' }}</span></td>
+          <td class="actions"><button class="ghost" (click)="edit(user)">Editar</button><button class="danger" (click)="remove(user.idUser)">Desactivar</button></td>
+        </tr>
+      } @empty { <tr><td colspan="7"><div class="empty-state">No se encontraron usuarios.</div></td></tr> }
+    </tbody>
+  </table>
+</div>

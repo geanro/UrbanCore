@@ -1,0 +1,4 @@
+.auth-header { display: grid; gap: 8px; margin-bottom: 18px; text-align: center; }
+.auth-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto; border-radius: 18px; background: var(--primary-soft); font-size: 24px; }
+.small-link { text-align: center; margin: 0; }
+.small-link a { color: var(--primary); font-weight: 900; }

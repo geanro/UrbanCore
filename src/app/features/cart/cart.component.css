@@ -1,0 +1,5 @@
+.cart-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
+.cart-product { display: flex; align-items: center; gap: 12px; }
+.summary-card { position: sticky; top: 90px; display: grid; gap: 14px; }
+.summary-total { font-size: 2rem; font-weight: 950; color: var(--primary); }
+@media (max-width: 900px) { .cart-layout { grid-template-columns: 1fr; } .summary-card { position: static; } }

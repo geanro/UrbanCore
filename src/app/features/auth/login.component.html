@@ -1,0 +1,31 @@
+<div class="auth-shell">
+  <section class="auth-card">
+    <div class="auth-header">
+      <span class="auth-icon">🔐</span>
+      <h1>Iniciar sesión</h1>
+      <p class="muted">Ingresa con tu usuario y contraseña para administrar o comprar.</p>
+    </div>
+
+    @if (error) { <div class="alert error">{{ error }}</div> }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+      <label>
+        Username
+        <input formControlName="username" placeholder="admin" autocomplete="username" />
+      </label>
+
+      <label>
+        Contraseña
+        <input formControlName="password" type="password" placeholder="123456" autocomplete="current-password" />
+      </label>
+
+      <button class="primary" [disabled]="form.invalid || loading">
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+
+      <p class="muted small-link">
+        ¿No tienes cuenta? <a routerLink="/register">Crear cuenta de cliente</a>
+      </p>
+    </form>
+  </section>
+</div>

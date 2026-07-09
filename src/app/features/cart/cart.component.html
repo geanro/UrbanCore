@@ -1,0 +1,110 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Carrito</h1>
+    <p class="muted">Revisa modelos y confirma la compra cuando tengas sesión activa.</p>
+  </div>
+</div>
+
+@if (message) {
+<div class="alert success">{{ message }}</div>
+}
+
+@if (error) {
+<div class="alert error">{{ error }}</div>
+}
+
+@if (cart.items().length === 0) {
+<div class="empty-state">
+  <h2>Tu carrito está vacío</h2>
+  <p>Agrega modelos desde la tienda pública.</p>
+  <a class="button primary" routerLink="/catalog">Ir a la tienda</a>
+</div>
+} @else {
+<div class="cart-layout">
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (item of cart.items(); track item.productId) {
+      <tr>
+        <td class="cart-product">
+          <img
+                  class="product-thumb"
+                  [src]="item.imageUrl || 'https://placehold.co/120x120?text=Sin+imagen'"
+                  [alt]="item.name"
+          >
+          <strong>{{ item.name }}</strong>
+        </td>
+
+        <td>S/ {{ item.price | number:'1.2-2' }}</td>
+
+        <td>
+          <input
+                  type="number"
+                  min="1"
+                  [(ngModel)]="item.quantity"
+                  (ngModelChange)="cart.updateQuantity(item.productId, item.quantity)"
+          />
+        </td>
+
+        <td>
+          <strong>S/ {{ item.price * item.quantity | number:'1.2-2' }}</strong>
+        </td>
+
+        <td>
+          <button class="danger" (click)="cart.remove(item.productId)">
+            Quitar
+          </button>
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+
+  <aside class="card summary-card">
+    <h2>Resumen</h2>
+
+    <p class="muted">Total de modelos: {{ cart.count() }}</p>
+
+    <div class="summary-total">
+      S/ {{ cart.total() | number:'1.2-2' }}
+    </div>
+
+    <label>
+      Sucursal de compra / recojo
+
+      <select [(ngModel)]="selectedBranchId">
+        @for (branch of branches; track branch.idBranch) {
+        <option [ngValue]="branch.idBranch">
+          {{ branch.name }} - {{ branch.address }}
+        </option>
+        }
+      </select>
+    </label>
+
+    <small class="muted">
+      Selecciona la sucursal más cercana para registrar tu compra.
+    </small>
+
+    <button class="primary" (click)="checkout()">
+      Confirmar compra
+    </button>
+
+    <button class="ghost" (click)="cart.clear()">
+      Vaciar carrito
+    </button>
+  </aside>
+
+</div>
+}

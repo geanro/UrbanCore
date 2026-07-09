@@ -1,0 +1,58 @@
+<section class="module-hero">
+  <span class="badge">Tienda interno</span>
+  <h1>Categorías</h1>
+  <p class="muted">Organiza modelos para facilitar búsquedas, filtros y reportes.</p>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="stats-grid">
+  <div class="stat-mini"><span>Total</span><strong>{{ categories.length }}</strong></div>
+  <div class="stat-mini"><span>Activas</span><strong>{{ activeCount }}</strong></div>
+  <div class="stat-mini"><span>Mostrando</span><strong>{{ filteredCategories.length }}</strong></div>
+</div>
+
+@if (canManageCategories) {
+  <section class="card">
+    <h2>{{ editingId ? 'Editar categoría' : 'Crear categoría' }}</h2>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid three">
+      <label>Nombre <input formControlName="name" placeholder="Polos"></label>
+      <label>Descripción <input formControlName="description" placeholder="Polos urbanos, oversize y gráficos"></label>
+      <label class="checkbox"><input type="checkbox" formControlName="active"> Activa</label>
+      <div class="actions"><button class="primary" [disabled]="form.invalid">{{ editingId ? 'Actualizar' : 'Guardar' }}</button><button type="button" class="ghost" (click)="reset()">Limpiar</button></div>
+    </form>
+  </section>
+} @else {
+  <div class="alert info">Modo consulta: los supervisores y vendedores pueden revisar categorías, pero no crearlas, editarlas ni desactivarlas.</div>
+}
+
+<section class="filter-panel">
+  <div class="filter-grid">
+    <label class="search-input">Buscar categoría
+      <input [(ngModel)]="searchTerm" placeholder="Nombre, descripción o ID">
+    </label>
+    <label>Estado
+      <select [(ngModel)]="statusFilter"><option value="ALL">Todas</option><option value="ACTIVE">Activas</option><option value="INACTIVE">Inactivas</option></select>
+    </label>
+    <div class="actions"><button class="ghost" (click)="clearFilters()">Limpiar filtros</button><button class="ghost" (click)="load()">Recargar</button></div>
+  </div>
+</section>
+
+<div class="table-title"><h2>Listado de categorías</h2><span class="table-meta">{{ filteredCategories.length }} resultado(s)</span></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Estado</th>@if (canManageCategories) { <th>Acciones</th> }</tr></thead>
+    <tbody>
+      @for (category of filteredCategories; track category.idCategory) {
+        <tr>
+          <td>{{ category.idCategory }}</td>
+          <td><strong>{{ category.name }}</strong></td>
+          <td>{{ category.description || '-' }}</td>
+          <td><span class="badge" [class.success]="category.active" [class.danger]="!category.active">{{ category.active ? 'Activa' : 'Inactiva' }}</span></td>
+          @if (canManageCategories) { <td class="actions"><button class="ghost" (click)="edit(category)">Editar</button><button class="danger" (click)="remove(category.idCategory)">Desactivar</button></td> }
+        </tr>
+      } @empty { <tr><td [attr.colspan]="canManageCategories ? 5 : 4"><div class="empty-state">No se encontraron categorías.</div></td></tr> }
+    </tbody>
+  </table>
+</div>

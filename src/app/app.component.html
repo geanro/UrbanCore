@@ -1,0 +1,188 @@
+<div class="promo-bar">
+  <span>ENVÍO GRATIS desde S/ 399</span>
+  <span>3 cuotas sin intereses</span>
+  <span>Cambios en tienda física</span>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner nav-layout">
+
+    <a routerLink="/" class="brand" aria-label="UrbanCore inicio">
+      <span class="brand-mark">UC</span>
+      <span class="brand-copy">
+        <strong>URBANCORE</strong>
+        <small>Streetwear Perú</small>
+      </span>
+    </a>
+
+    <nav class="nav nav-center" aria-label="Categorías principales">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Inicio
+      </a>
+
+      <a routerLink="/catalog" routerLinkActive="active">
+        New In
+      </a>
+
+      <a routerLink="/catalog" [queryParams]="{ category: 'Ropa urbana' }" routerLinkActive="active">
+        Ropa urbana
+      </a>
+
+      <div class="nav-dropdown">
+        <a routerLink="/catalog" class="dropdown-trigger">
+          Categorías
+        </a>
+
+        <div class="dropdown-menu category-menu">
+          <a routerLink="/catalog" [queryParams]="{ category: 'Polos' }">Polos</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Poleras' }">Poleras</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Casacas' }">Casacas</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Pantalones' }">Pantalones</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Jeans' }">Jeans</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Joggers' }">Joggers</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Calzado' }">Calzado</a>
+          <a routerLink="/catalog" [queryParams]="{ category: 'Accesorios' }">Accesorios</a>
+        </div>
+      </div>
+
+      <a routerLink="/contact" routerLinkActive="active">
+        Contacto
+      </a>
+    </nav>
+
+    <nav class="nav nav-actions" aria-label="Acciones de usuario">
+
+      @if (!auth.isLoggedIn() || auth.hasRole('CUSTOMER')) {
+      <a routerLink="/cart" routerLinkActive="active" class="cart-pill">
+        Carrito ({{ cart.count() }})
+      </a>
+      }
+
+      @if (auth.isLoggedIn()) {
+      <div class="nav-dropdown account-dropdown">
+        <button type="button" class="account-trigger">
+          {{ auth.session()?.role }} · {{ auth.session()?.name || auth.session()?.sub }}
+        </button>
+
+        <div class="dropdown-menu account-menu">
+          <a routerLink="/dashboard" routerLinkActive="active">
+            Panel
+          </a>
+
+          @if (can('READ_ALL_USERS') && !auth.hasRole('CUSTOMER')) {
+          <a routerLink="/users" routerLinkActive="active">Usuarios</a>
+          }
+
+          @if (can('READ_ALL_BRANCHES') && !auth.hasRole('CUSTOMER')) {
+          <a routerLink="/branches" routerLinkActive="active">Sucursales</a>
+          }
+
+          @if (can('READ_ALL_CATEGORIES') && !auth.hasRole('CUSTOMER')) {
+          <a routerLink="/categories" routerLinkActive="active">Categorías</a>
+          }
+
+          @if (can('READ_ALL_PRODUCTS') && !auth.hasRole('CUSTOMER')) {
+          <a routerLink="/products" routerLinkActive="active">Productos</a>
+          }
+
+          @if (canAny(['READ_INVENTORY','READ_BRANCH_INVENTORY']) && !auth.hasRole('CUSTOMER')) {
+          <a routerLink="/inventory" routerLinkActive="active">Inventario</a>
+          }
+
+          @if (canAny(['READ_ALL_SALES','READ_BRANCH_SALES','READ_MY_SALES'])) {
+          <a routerLink="/sales" routerLinkActive="active">
+            {{ auth.hasRole('CUSTOMER') ? 'Mis compras' : 'Ventas' }}
+          </a>
+          }
+
+          @if (auth.hasRole('CUSTOMER')) {
+          <a routerLink="/cart" routerLinkActive="active">
+            Mi carrito
+          </a>
+          }
+
+          <a routerLink="/profile" routerLinkActive="active">
+            Perfil
+          </a>
+
+          <button class="link-button logout-option" (click)="logout()">
+            Salir
+          </button>
+        </div>
+      </div>
+      } @else {
+      <div class="nav-dropdown auth-dropdown">
+        <a routerLink="/login" class="login-trigger">
+          Ingresar
+        </a>
+
+        <div class="dropdown-menu auth-menu">
+          <a routerLink="/login">Iniciar sesión</a>
+          <a routerLink="/register" class="register-option">Crear cuenta</a>
+        </div>
+      </div>
+      }
+
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <router-outlet />
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+
+    <div class="footer-brand">
+      <div class="brand footer-logo">
+        <span class="brand-mark">UC</span>
+        <span>
+          <strong>UrbanCore Perú</strong>
+          <small>Ropa urbana · calzado · accesorios</small>
+        </span>
+      </div>
+
+      <p>
+        Ropa urbana, calzado y accesorios para el día a día. Compra online, elige tu sucursal y arma tu outfit con estilo.
+      </p>
+
+      <div class="footer-badges">
+        <span>Envío nacional</span>
+        <span>Pago seguro</span>
+        <span>Cambios en tienda</span>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Tienda</h4>
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/catalog">Catálogo</a>
+      @if (!auth.isLoggedIn() || auth.hasRole('CUSTOMER')) {
+        <a routerLink="/cart">Carrito</a>
+      }
+      <a routerLink="/contact">Contacto</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Categorías</h4>
+      <a routerLink="/catalog" [queryParams]="{ category: 'Polos' }">Polos</a>
+      <a routerLink="/catalog" [queryParams]="{ category: 'Pantalones' }">Pantalones</a>
+      <a routerLink="/catalog" [queryParams]="{ category: 'Calzado' }">Calzado</a>
+      <a routerLink="/catalog" [queryParams]="{ category: 'Accesorios' }">Accesorios</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <span>ventas&#64;urbancore.pe</span>
+      <span>+51 999 888 777</span>
+      <span>Av. Primavera 2450, Lima</span>
+      <a routerLink="/contact">Ver canales de atención</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2026 UrbanCore Perú. Todos los derechos reservados.
+  </div>
+</footer>

@@ -1,0 +1,75 @@
+<section class="module-hero">
+  <span class="badge">Gestión de catálogo</span>
+  <h1>Productos</h1>
+  <p class="muted">Administra prendas, calzado y accesorios con precio, categoría, estado e imagen pública por URL.</p>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="stats-grid">
+  <div class="stat-mini"><span>Total</span><strong>{{ products.length }}</strong></div>
+  <div class="stat-mini"><span>Activos</span><strong>{{ activeCount }}</strong></div>
+  <div class="stat-mini"><span>Promedio precio</span><strong>S/ {{ averagePrice | number:'1.2-2' }}</strong></div>
+  <div class="stat-mini"><span>Mostrando</span><strong>{{ filteredProducts.length }}</strong></div>
+</div>
+
+@if (canManageProducts) {
+  <section class="card">
+    <h2>{{ editingId ? 'Editar producto' : 'Crear producto' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid four">
+      <label>Nombre <input formControlName="name" placeholder="Polo oversized negro"></label>
+      <label>Descripción <input formControlName="description" placeholder="Polo urbano de algodón"></label>
+      <label>Precio <input type="number" step="0.01" formControlName="price"></label>
+      <label>URL de imagen <input formControlName="imageUrl" placeholder="https://ejemplo.com/producto.jpg"></label>
+
+      <label>Categoría
+        <select formControlName="categoryId"><option [ngValue]="null">Seleccione</option>@for (category of categories; track category.idCategory) { <option [ngValue]="category.idCategory">{{ category.name }}</option> }</select>
+      </label>
+
+      <label class="checkbox"><input type="checkbox" formControlName="active"> Activo</label>
+
+      <div class="actions"><button class="primary" [disabled]="form.invalid">{{ editingId ? 'Actualizar' : 'Guardar' }}</button><button type="button" class="ghost" (click)="reset()">Limpiar</button></div>
+    </form>
+  </section>
+} @else {
+  <div class="alert info">Modo consulta: supervisores y vendedores pueden ver el catálogo interno, pero no crear, editar ni desactivar productos.</div>
+}
+
+<section class="filter-panel">
+  <div class="filter-grid">
+    <label class="search-input">Buscar producto
+      <input [(ngModel)]="searchTerm" placeholder="Nombre, descripción, categoría o ID">
+    </label>
+    <label>Categoría
+      <select [(ngModel)]="categoryFilter"><option value="ALL">Todas</option>@for (category of categories; track category.idCategory) { <option [ngValue]="category.idCategory">{{ category.name }}</option> }</select>
+    </label>
+    <label>Estado
+      <select [(ngModel)]="statusFilter"><option value="ALL">Todos</option><option value="ACTIVE">Activos</option><option value="INACTIVE">Inactivos</option></select>
+    </label>
+    <label>Precio mínimo <input type="number" [(ngModel)]="minPrice" placeholder="0"></label>
+    <label>Precio máximo <input type="number" [(ngModel)]="maxPrice" placeholder="100"></label>
+    <div class="actions"><button class="ghost" (click)="clearFilters()">Limpiar filtros</button><button class="ghost" (click)="load()">Recargar</button></div>
+  </div>
+</section>
+
+<div class="table-title"><h2>Listado de productos</h2><span class="table-meta">{{ filteredProducts.length }} resultado(s)</span></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Imagen</th><th>ID</th><th>Producto</th><th>Categoría</th><th>Precio</th><th>Estado</th>@if (canManageProducts) { <th>Acciones</th> }</tr></thead>
+    <tbody>
+      @for (product of filteredProducts; track product.idProduct) {
+        <tr>
+          <td><img class="product-thumb" [src]="product.imageUrl || 'https://placehold.co/120x120?text=Sin+imagen'" [alt]="product.name"></td>
+          <td>{{ product.idProduct }}</td>
+          <td><strong>{{ product.name }}</strong><br><span class="muted">{{ product.description || '-' }}</span></td>
+          <td>{{ product.categoryName }}</td>
+          <td><span class="price">S/ {{ product.price | number:'1.2-2' }}</span></td>
+          <td><span class="badge" [class.success]="product.active" [class.danger]="!product.active">{{ product.active ? 'Activo' : 'Inactivo' }}</span></td>
+          @if (canManageProducts) { <td class="actions"><button class="ghost" (click)="edit(product)">Editar</button><button class="danger" (click)="remove(product.idProduct)">Desactivar</button></td> }
+        </tr>
+      } @empty { <tr><td [attr.colspan]="canManageProducts ? 7 : 6"><div class="empty-state">No se encontraron productos.</div></td></tr> }
+    </tbody>
+  </table>
+</div>

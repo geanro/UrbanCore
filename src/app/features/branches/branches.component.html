@@ -1,0 +1,75 @@
+<section class="module-hero">
+  <span class="badge">Administración</span>
+  <h1>Sucursales</h1>
+  <p class="muted">Gestiona puntos de venta, datos de contacto y estado operativo.</p>
+</section>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="stats-grid">
+  <div class="stat-mini"><span>Total</span><strong>{{ branches.length }}</strong></div>
+  <div class="stat-mini"><span>Activas</span><strong>{{ activeCount }}</strong></div>
+  <div class="stat-mini"><span>Inactivas</span><strong>{{ inactiveCount }}</strong></div>
+  <div class="stat-mini"><span>Mostrando</span><strong>{{ filteredBranches.length }}</strong></div>
+</div>
+
+@if (canManageBranches) {
+  <section class="card">
+    <h2>{{ editingId ? 'Editar sucursal' : 'Crear sucursal' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid four">
+      <label>Nombre <input formControlName="name" placeholder="Sucursal Lima Centro"></label>
+      <label>Dirección <input formControlName="address" placeholder="Av. Abancay 123"></label>
+      <label>Teléfono <input formControlName="phone" placeholder="999111222"></label>
+      <label class="checkbox"><input type="checkbox" formControlName="active"> Activa</label>
+
+      <div class="actions">
+        <button class="primary" [disabled]="form.invalid">{{ editingId ? 'Actualizar' : 'Guardar' }}</button>
+        <button type="button" class="ghost" (click)="reset()">Limpiar</button>
+      </div>
+    </form>
+  </section>
+} @else {
+  <div class="alert info">Modo consulta: los supervisores y vendedores pueden revisar sucursales, pero no crearlas, editarlas ni desactivarlas.</div>
+}
+
+<section class="filter-panel">
+  <div class="filter-grid">
+    <label class="search-input">Buscar sucursal
+      <input [(ngModel)]="searchTerm" placeholder="Nombre, dirección, teléfono o ID">
+    </label>
+    <label>Estado
+      <select [(ngModel)]="statusFilter">
+        <option value="ALL">Todos</option>
+        <option value="ACTIVE">Activas</option>
+        <option value="INACTIVE">Inactivas</option>
+      </select>
+    </label>
+    <div class="actions">
+      <button class="ghost" type="button" (click)="clearFilters()">Limpiar filtros</button>
+      <button class="ghost" type="button" (click)="load()">Recargar</button>
+    </div>
+  </div>
+</section>
+
+<div class="table-title"><h2>Listado de sucursales</h2><span class="table-meta">{{ filteredBranches.length }} resultado(s)</span></div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th><th>Estado</th>@if (canManageBranches) { <th>Acciones</th> }</tr></thead>
+    <tbody>
+      @for (branch of filteredBranches; track branch.idBranch) {
+        <tr>
+          <td>{{ branch.idBranch }}</td>
+          <td><strong>{{ branch.name }}</strong></td>
+          <td>{{ branch.address }}</td>
+          <td>{{ branch.phone }}</td>
+          <td><span class="badge" [class.success]="branch.active" [class.danger]="!branch.active">{{ branch.active ? 'Activa' : 'Inactiva' }}</span></td>
+          @if (canManageBranches) { <td class="actions"><button class="ghost" (click)="edit(branch)">Editar</button><button class="danger" (click)="remove(branch.idBranch)">Desactivar</button></td> }
+        </tr>
+      } @empty {
+        <tr><td [attr.colspan]="canManageBranches ? 6 : 5"><div class="empty-state">No se encontraron sucursales con esos filtros.</div></td></tr>
+      }
+    </tbody>
+  </table>
+</div>

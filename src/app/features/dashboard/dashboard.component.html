@@ -1,0 +1,87 @@
+<section class="module-hero dashboard-hero">
+  <span class="badge">{{ auth.session()?.role }}</span>
+  <h1>{{ auth.hasRole('CUSTOMER') ? 'Mi cuenta UrbanCore' : 'Panel UrbanCore' }}</h1>
+  <p class="muted">
+    {{ auth.hasRole('CUSTOMER')
+      ? 'Hola, ' + (auth.session()?.name || auth.session()?.sub) + '. Revisa tu tienda, carrito, compras y perfil.'
+      : 'Hola, ' + (auth.session()?.name || auth.session()?.sub) + '. Gestiona los módulos disponibles para tu rol.' }}
+  </p>
+</section>
+
+<div class="card-grid dashboard-grid">
+  <a class="card dashboard-card" routerLink="/catalog">
+    <span>🛍️</span>
+    <h3>Tienda online</h3>
+    <p class="muted">Explora productos disponibles.</p>
+  </a>
+
+  @if (auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/cart">
+      <span>🛒</span>
+      <h3>Mi carrito</h3>
+      <p class="muted">Revisa tus modelos seleccionados.</p>
+    </a>
+  }
+
+  @if (auth.hasPermission('READ_MY_SALES')) {
+    <a class="card dashboard-card" routerLink="/sales">
+      <span>🧾</span>
+      <h3>{{ auth.hasRole('CUSTOMER') ? 'Mis compras' : 'Mis ventas' }}</h3>
+      <p class="muted">Consulta tus movimientos registrados.</p>
+    </a>
+  }
+
+  @if (auth.hasPermission('READ_ALL_USERS') && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/users">
+      <span>👥</span>
+      <h3>Usuarios</h3>
+      <p class="muted">Administra cuentas y roles.</p>
+    </a>
+  }
+
+  @if (auth.hasPermission('READ_ALL_BRANCHES') && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/branches">
+      <span>🏬</span>
+      <h3>Sucursales</h3>
+      <p class="muted">Gestiona tiendas físicas.</p>
+    </a>
+  }
+
+  @if (auth.hasPermission('READ_ALL_CATEGORIES') && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/categories">
+      <span>🏷️</span>
+      <h3>Categorías</h3>
+      <p class="muted">Organiza el catálogo.</p>
+    </a>
+  }
+
+  @if (auth.hasPermission('READ_ALL_PRODUCTS') && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/products">
+      <span>👕</span>
+      <h3>Productos</h3>
+      <p class="muted">Revisa prendas, precios e imágenes.</p>
+    </a>
+  }
+
+  @if (auth.hasAnyPermission(['READ_INVENTORY','READ_BRANCH_INVENTORY']) && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/inventory">
+      <span>📦</span>
+      <h3>Inventario</h3>
+      <p class="muted">Consulta y actualiza stock.</p>
+    </a>
+  }
+
+  @if (auth.hasAnyPermission(['READ_ALL_SALES','READ_BRANCH_SALES']) && !auth.hasRole('CUSTOMER')) {
+    <a class="card dashboard-card" routerLink="/sales">
+      <span>💰</span>
+      <h3>Ventas</h3>
+      <p class="muted">Consulta o registra ventas.</p>
+    </a>
+  }
+
+  <a class="card dashboard-card" routerLink="/profile">
+    <span>👤</span>
+    <h3>Perfil</h3>
+    <p class="muted">Actualiza tus datos de cuenta.</p>
+  </a>
+</div>

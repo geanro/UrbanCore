@@ -1,0 +1,131 @@
+<section class="home-hero" id="inicio">
+  <div class="hero-content">
+    <span class="eyebrow">Nueva temporada</span>
+    <h1>Ropa urbana para moverte con actitud.</h1>
+    <p>
+      Descubre polos oversized, joggers, casacas, sneakers y accesorios seleccionados para tu día a día.
+    </p>
+
+    <div class="landing-actions">
+      <a class="button primary" routerLink="/catalog">Comprar ahora</a>
+      <a class="button ghost" routerLink="/catalog" [queryParams]="{ category: 'Ropa urbana' }">Ver colección</a>
+      @if (auth.isLoggedIn()) {
+        <a class="button ghost" routerLink="/dashboard">Ir al panel</a>
+      } @else {
+        <a class="button ghost" routerLink="/login">Ingresar</a>
+      }
+    </div>
+  </div>
+
+  <div class="hero-gallery" aria-label="Colección UrbanCore">
+    <article class="hero-photo main-photo">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs_zm0oVTNJ8kj4G_tFEdo1EJFmiUFYoJRLI_DzN4ZGA&s=10" alt="Moda urbana con chaqueta y estilo streetwear">
+      <div>
+        <span>Streetwear</span>
+        <strong>Outfits urbanos</strong>
+      </div>
+    </article>
+
+    <article class="hero-photo small-photo">
+      <img src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=700&q=85" alt="Polos urbanos colgados en tienda">
+      <div>
+        <span>New in</span>
+        <strong>Polos</strong>
+      </div>
+    </article>
+
+    <article class="hero-photo small-photo">
+      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=85" alt="Zapatillas urbanas rojas">
+      <div>
+        <span>Sneakers</span>
+        <strong>Calzado</strong>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="category-showcase">
+  <a routerLink="/catalog" [queryParams]="{ category: 'Polos' }" class="category-card">
+    <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=700&q=85" alt="Polos urbanos">
+    <span>Polos</span>
+    <strong>Oversized y gráficos</strong>
+  </a>
+
+  <a routerLink="/catalog" [queryParams]="{ category: 'Pantalones' }" class="category-card">
+    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=85" alt="Pantalones urbanos">
+    <span>Pantalones</span>
+    <strong>Cargos, jeans y joggers</strong>
+  </a>
+
+  <a routerLink="/catalog" [queryParams]="{ category: 'Calzado' }" class="category-card">
+    <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?auto=format&fit=crop&w=700&q=85" alt="Calzado urbano">
+    <span>Calzado</span>
+    <strong>Sneakers y zapatillas</strong>
+  </a>
+
+  <a routerLink="/catalog" [queryParams]="{ category: 'Accesorios' }" class="category-card">
+    <img src="https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=700&q=85" alt="Accesorios urbanos">
+    <span>Accesorios</span>
+    <strong>Gorras, mochilas y más</strong>
+  </a>
+</section>
+
+<section class="collection-banner">
+  <div>
+    <span class="eyebrow light">UrbanCore Essentials</span>
+    <h2>Prendas listas para combinar.</h2>
+    <p>
+      Arma looks cómodos con básicos premium, piezas oversize y calzado urbano para cualquier plan.
+    </p>
+  </div>
+  <a class="button primary light-button" routerLink="/catalog">Explorar catálogo</a>
+</section>
+
+<section class="drop-section">
+  <div class="section-heading">
+    <span class="page-kicker">Destacados</span>
+    <h2>Compra por estilo</h2>
+    <p class="muted">Elige una línea y encuentra rápidamente las prendas que quieres agregar al carrito.</p>
+  </div>
+
+  <div class="style-grid">
+    <a class="style-card" routerLink="/catalog" [queryParams]="{ category: 'Casacas' }">
+      <img src="https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=700&q=85" alt="Casacas urbanas">
+      <div>
+        <span>Capas urbanas</span>
+        <strong>Casacas</strong>
+      </div>
+    </a>
+
+    <a class="style-card" routerLink="/catalog" [queryParams]="{ category: 'Joggers' }">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3IElbbQUradYDkj362m_uVGff871UmU2LMUVuXC7iiP0SScGKSmTP3nYS&s=10" alt="Joggers urbanos">
+      <div>
+        <span>Comodidad diaria</span>
+        <strong>Joggers</strong>
+      </div>
+    </a>
+
+    <a class="style-card" routerLink="/catalog" [queryParams]="{ category: 'Accesorios' }">
+      <img src="https://http2.mlstatic.com/D_NQ_NP_617513-MLU74517981257_022024-O.webp" alt="Accesorios streetwear">
+      <div>
+        <span>Detalles finales</span>
+        <strong>Accesorios</strong>
+      </div>
+    </a>
+  </div>
+</section>
+
+<section class="benefits-strip">
+  <article>
+    <strong>Retiro en tienda</strong>
+    <span>Selecciona la sucursal más cercana al comprar.</span>
+  </article>
+  <article>
+    <strong>Stock por sucursal</strong>
+    <span>Consulta disponibilidad actualizada en el catálogo.</span>
+  </article>
+  <article>
+    <strong>Compra segura</strong>
+    <span>Tu cuenta registra compras y movimientos.</span>
+  </article>
+</section>

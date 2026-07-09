@@ -1,0 +1,2 @@
+.stock-actions { display: flex; gap: 8px; align-items: center; }
+.stock-actions input { width: 110px; }

@@ -1,0 +1,11 @@
+.dashboard-hero {
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.78), rgba(0,0,0,.28)),
+    url('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=85') center/cover;
+  margin-bottom: 22px;
+}
+.dashboard-grid { align-items: stretch; }
+.dashboard-card { transition: transform .16s, box-shadow .16s; min-height: 185px; }
+.dashboard-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.dashboard-card span { font-size: 30px; }
+.dashboard-card h3 { text-transform: uppercase; letter-spacing: -.02em; }

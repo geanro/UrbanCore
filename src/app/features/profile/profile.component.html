@@ -1,0 +1,35 @@
+<div class="page-header">
+  <div class="page-title">
+    <h1>Mi perfil</h1>
+    <p class="muted">Gestiona tus datos personales y tu contraseña.</p>
+  </div>
+</div>
+
+@if (error) { <div class="alert error">{{ error }}</div> }
+@if (message) { <div class="alert success">{{ message }}</div> }
+
+<div class="card-grid">
+  <section class="card profile-card">
+    <h2>Sesión</h2>
+    <p><b>Usuario:</b> {{ auth.session()?.sub }}</p>
+    <p><b>Nombre:</b> {{ auth.session()?.name }}</p>
+    <p><b>Rol:</b> <span class="badge">{{ auth.session()?.role }}</span></p>
+  </section>
+
+  <section class="card">
+    <h2>Actualizar nombre</h2>
+    <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="form-grid">
+      <label>Nombre <input formControlName="name"></label>
+      <button class="primary" [disabled]="profileForm.invalid">Guardar</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Cambiar contraseña</h2>
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="form-grid">
+      <label>Contraseña actual <input type="password" formControlName="currentPassword"></label>
+      <label>Nueva contraseña <input type="password" formControlName="newPassword"></label>
+      <button class="primary" [disabled]="passwordForm.invalid">Cambiar</button>
+    </form>
+  </section>
+</div>
