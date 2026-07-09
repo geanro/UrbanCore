@@ -11,12 +11,12 @@
     <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
       <label>
         Username
-        <input formControlName="username" placeholder="admin" autocomplete="username" />
+        <input formControlName="username" placeholder="username" autocomplete="username" />
       </label>
 
       <label>
         Contraseña
-        <input formControlName="password" type="password" placeholder="123456" autocomplete="current-password" />
+        <input formControlName="password" type="password" placeholder="password" autocomplete="current-password" />
       </label>
 
       <button class="primary" [disabled]="form.invalid || loading">

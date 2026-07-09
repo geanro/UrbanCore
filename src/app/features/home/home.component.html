@@ -8,7 +8,7 @@
 
     <div class="landing-actions">
       <a class="button primary" routerLink="/catalog">Comprar ahora</a>
-      <a class="button ghost" routerLink="/catalog" [queryParams]="{ category: 'Ropa urbana' }">Ver colección</a>
+      <a class="button ghost" routerLink="/catalog">Ver colección</a>
       @if (auth.isLoggedIn()) {
         <a class="button ghost" routerLink="/dashboard">Ir al panel</a>
       } @else {
